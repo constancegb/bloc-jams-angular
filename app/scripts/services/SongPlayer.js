@@ -13,8 +13,7 @@
          * @param {Object} song */
          var setSong = function(song) {
             if (currentBuzzObject) {
-                currentBuzzObject.stop();
-                SongPlayer.currentSong.playing = null;
+                stopSong(SongPlayer.currentSong);
             }
  
             currentBuzzObject = new buzz.sound(song.audioUrl, {
@@ -34,6 +33,14 @@
               currentBuzzObject.play(); 
               song.playing = true;
           };
+         
+         /** @function stopSong
+         * @desc stops a song
+         * @param {Object} song */
+         var stopSong = function(song) {
+            currentBuzzObject.stop();
+            song.playing = null;
+         };
          
           /** @function getSongIndex
          * @desc gets index of a song
@@ -73,13 +80,27 @@
           };
          
           /** @function previous
-         * @desc go to the previous song, or stops if the current song is the first song. */
+         * @desc go to the previous song, or stops if the current song is the first song of the album. */
           SongPlayer.previous = function() {
             var currentSongIndex = getSongIndex(SongPlayer.currentSong);
             currentSongIndex--;
             if (currentSongIndex < 0) {
-                currentBuzzObject.stop();
-                SongPlayer.currentSong.playing = null;
+                stopSong(SongPlayer.currentSong);
+            } else {
+                var song = currentAlbum.songs[currentSongIndex];
+                setSong(song);
+                playSong(song);
+            }
+          };
+         
+          /** @function next
+         * @desc go to the next song, or stops if the current song is the last song of the album. */
+          SongPlayer.next = function() {
+            var currentSongIndex = getSongIndex(SongPlayer.currentSong);
+            currentSongIndex++;
+            var lastSongIndex = currentAlbum.songs.length - 1;
+            if (currentSongIndex > lastSongIndex) {
+                stopSong(SongPlayer.currentSong);
             } else {
                 var song = currentAlbum.songs[currentSongIndex];
                 setSong(song);
