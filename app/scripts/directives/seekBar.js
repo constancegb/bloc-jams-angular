@@ -12,13 +12,22 @@
             templateUrl: '/templates/directives/seek_bar.html', /*Specifies a URL from which the directive will load a template.*/
             replace: true, /* If true, template replaces the directive's element. If false, replaces contents of the directive's element.*/
             restrict: 'E', /*Restricts the directive to a specific declaration style: element  E, attribute A, class C, and comment M*/
-            scope: { }, /* specifies that a new scope be created for the directive*/
+            scope: {
+                onChange: '&'
+            }, /**specify how we want to handle the value passed to the on-change attribute:*/
             link: function(scope, element, attributes) { /* register DOM listeners and update DOM. This is where we put most of directive logic.*/
              // directive logic to return
                 scope.value = 0;
                 scope.max = 100;
                 
                 var seekBar = $(element);
+                
+                attributes.$observe('value', function(newValue) {
+                scope.value = newValue;
+                });
+                attributes.$observe('max', function(newValue) {
+                scope.max = newValue;
+                });
  
                 var percentString = function () {
                  var value = scope.value;
@@ -38,6 +47,7 @@
                  scope.onClickSeekBar = function(event) {
                     var percent = calculatePercent(seekBar, event);
                     scope.value = percent * scope.max;
+                    notifyOnChange(scope.value);
                  };
                 
                  scope.trackThumb = function() {
@@ -45,6 +55,7 @@
                         var percent = calculatePercent(seekBar, event);
                         scope.$apply(function() {
                             scope.value = percent * scope.max;
+                            notifyOnChange(scope.value);
                         });
                     });
  
@@ -52,6 +63,12 @@
                         $document.unbind('mousemove.thumb');
                         $document.unbind('mouseup.thumb');
                     });
+                 };
+                
+                 var notifyOnChange = function(newValue) {
+                    if (typeof scope.onChange === 'function') {
+                        scope.onChange({value: newValue});
+                    }
                  };
             }
          };
