@@ -63,6 +63,10 @@
           * @type {Number}*/
           SongPlayer.currentTime = null;
          
+          /* @ desc Initiate the volume value to 75
+          * @type {Number}*/
+          SongPlayer.volume = 75;
+         
          /** @function play
          * @desc Sarts playing the current song
          * @param {Object} song */
@@ -123,8 +127,14 @@
           * @param {Number} time*/
           SongPlayer.setCurrentTime = function(time) {
             if (currentBuzzObject) {
-            currentBuzzObject.setTime(time);
+                currentBuzzObject.setTime(time);
             }
+          };
+         SongPlayer.currentTime
+          SongPlayer.setVolume = function(volume) {
+              if (currentBuzzObject) {
+                  currentBuzzObject.setVolume(volume);
+              }
           };
          
           return SongPlayer;
